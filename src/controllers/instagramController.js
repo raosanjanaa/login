@@ -5,12 +5,11 @@ const config = require("../config/metaConfig");
 // LOGIN (BUSINESS LOGIN)
 // =====================
 exports.instagramLogin = (req, res) => {
-  const redirectUri = config.INSTAGRAM_REDIRECT_URI;
-
   const url =
-    `https://www.facebook.com/v21.0/dialog/oauth` +
-    `?client_id=${config.INSTAGRAM_APP_ID}` +
-    `&redirect_uri=${encodeURIComponent(redirectUri)}` +
+    `https://www.instagram.com/oauth/authorize` +
+    `?force_reauth=true` +
+    `&client_id=${config.INSTAGRAM_APP_ID}` +
+    `&redirect_uri=${encodeURIComponent(config.INSTAGRAM_REDIRECT_URI)}` +
     `&response_type=code` +
     `&scope=instagram_business_basic,instagram_business_manage_messages,instagram_business_manage_comments,instagram_business_content_publish,instagram_business_manage_insights`;
 
