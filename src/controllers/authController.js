@@ -2,22 +2,18 @@ const axios = require("axios");
 const config = require("../config/metaConfig");
 
 // ==============================
-// FACEBOOK LOGIN REDIRECT
+// FACEBOOK LOGIN
 // ==============================
 exports.facebookLogin = (req, res) => {
   const scope =
-    "public_profile,email,pages_show_list,pages_read_engagement,pages_manage_metadata";
-
-  // simple state for security (you can make it random later)
-  const state = "secure_state_123";
+    "public_profile,email,pages_show_list,pages_read_engagement";
 
   const loginUrl =
     `https://www.facebook.com/v21.0/dialog/oauth` +
     `?client_id=${config.APP_ID}` +
     `&redirect_uri=${encodeURIComponent(config.FACEBOOK_REDIRECT_URI)}` +
     `&scope=${scope}` +
-    `&response_type=code` +
-    `&state=${state}`;
+    `&response_type=code`;
 
   res.redirect(loginUrl);
 };
@@ -27,71 +23,50 @@ exports.facebookLogin = (req, res) => {
 // ==============================
 exports.facebookCallback = async (req, res) => {
   try {
-    const { code, error, error_description } = req.query;
+    const { code, error, error_reason } = req.query;
 
-    // If Facebook returns error
+    console.log("FB CALLBACK QUERY:", req.query);
+    console.log("REDIRECT URI:", config.FACEBOOK_REDIRECT_URI);
+
     if (error) {
-      console.error("FB OAUTH ERROR:", error, error_description);
       return res.status(400).json({
         success: false,
         message: "Facebook rejected login",
-        error: error_description || error
+        error_reason
       });
     }
 
     if (!code) {
-      return res.status(400).send("No authorization code received.");
+      return res.status(400).send("No code received");
     }
 
     // ==============================
     // STEP 1: EXCHANGE CODE FOR TOKEN
     // ==============================
     const tokenResponse = await axios.get(
-  "https://graph.facebook.com/oauth/access_token",
-  {
-    params: {
-      client_id: config.APP_ID,
-      client_secret: config.APP_SECRET,
-      redirect_uri: config.FACEBOOK_REDIRECT_URI,
-      code
-    }
-  }
-);
+      "https://graph.facebook.com/v21.0/oauth/access_token",
+      {
+        params: {
+          client_id: config.APP_ID,
+          client_secret: config.APP_SECRET,
+
+          // MUST MATCH EXACTLY LOGIN redirect_uri
+          redirect_uri: config.FACEBOOK_REDIRECT_URI,
+
+          code
+        }
+      }
+    );
+
     const accessToken = tokenResponse.data.access_token;
 
-    if (!accessToken) {
-      return res.status(500).json({
-        success: false,
-        message: "Failed to get access token"
-      });
-    }
-
-    console.log("✅ FB ACCESS TOKEN RECEIVED");
+    console.log("ACCESS TOKEN RECEIVED");
 
     // ==============================
-    // STEP 2: DEBUG TOKEN (VERY IMPORTANT)
-    // ==============================
-    try {
-      const debug = await axios.get(
-        `https://graph.facebook.com/debug_token`,
-        {
-          params: {
-            input_token: accessToken,
-            access_token: `${config.APP_ID}|${config.APP_SECRET}`
-          }
-        }
-      );
-
-      console.log("🔍 TOKEN DEBUG:", debug.data.data);
-    } catch (e) {
-      console.log("⚠️ Token debug failed:", e.response?.data || e.message);
-    }
-
-    // ==============================
-    // STEP 3: GET USER PROFILE
+    // STEP 2: GET PROFILE
     // ==============================
     const profileResponse = await axios.get(
-      `https://graph.facebook.com/me`,
+      "https://graph.facebook.com/me",
       {
         params: {
           fields: "id,name,email,picture.width(400).height(400)",
@@ -100,22 +75,13 @@ exports.facebookCallback = async (req, res) => {
       }
     );
 
-    // ==============================
-    // STEP 4: SAVE SESSION
-    // ==============================
     req.session.fbAccessToken = accessToken;
     req.session.facebookProfile = profileResponse.data;
 
-    console.log("✅ USER LOGGED IN:", profileResponse.data.name);
-
-    // ==============================
-    // STEP 5: REDIRECT
-    // ==============================
     return res.redirect("/facebook.html");
 
   } catch (error) {
-    console.error("❌ FACEBOOK LOGIN FAILED:");
-    console.error(error.response?.data || error.message);
+    console.error("FACEBOOK ERROR:", error.response?.data || error.message);
 
     return res.status(500).json({
       success: false,
