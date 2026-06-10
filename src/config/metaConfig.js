@@ -1,11 +1,13 @@
 require("dotenv").config();
 
+const BASE_URL = "https://login-aet4.onrender.com";
+
 module.exports = {
   APP_ID: process.env.META_APP_ID,
   APP_SECRET: process.env.META_APP_SECRET,
 
-  // IMPORTANT: single source of truth
-  FACEBOOK_REDIRECT_URI: "https://login-aet4.onrender.com/auth/facebook/callback",
+  // SINGLE SOURCE OF TRUTH
+  FACEBOOK_REDIRECT_URI: `${BASE_URL}/auth/facebook/callback`,
 
   INSTAGRAM_APP_ID: process.env.INSTAGRAM_APP_ID,
   INSTAGRAM_APP_SECRET: process.env.INSTAGRAM_APP_SECRET,
