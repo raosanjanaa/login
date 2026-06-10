@@ -25,13 +25,10 @@ exports.instagramCallback = async (req, res) => {
   try {
     const { code } = req.query;
 
-    if (!code) {
-      return res.status(400).send("No code received");
-    }
+    if (!code) return res.status(400).send("No code received");
 
     const redirectUri = config.INSTAGRAM_REDIRECT_URI;
 
-    // STEP 1: EXCHANGE CODE FOR TOKEN
     const tokenRes = await axios.post(
       "https://api.instagram.com/oauth/access_token",
       new URLSearchParams({
@@ -46,7 +43,6 @@ exports.instagramCallback = async (req, res) => {
     const accessToken = tokenRes.data.access_token;
     const userId = tokenRes.data.user_id;
 
-    // STEP 2: GET PROFILE
     const profileRes = await axios.get(
       `https://graph.instagram.com/${userId}`,
       {
@@ -57,7 +53,6 @@ exports.instagramCallback = async (req, res) => {
       }
     );
 
-    // STORE SESSION
     req.session.instagramToken = accessToken;
     req.session.instagramProfile = profileRes.data;
 
@@ -79,18 +74,18 @@ exports.instagramCallback = async (req, res) => {
 // =====================
 exports.instagramProfile = (req, res) => {
   if (!req.session?.instagramProfile) {
-    return res.json({
-      success: false
-    });
+    return res.json({ success: false });
   }
 
-  return res.json({
+  res.json({
     success: true,
     data: req.session.instagramProfile
   });
 };
-const axios = require("axios");
 
+// =====================
+// MEDIA (OPTIONAL BUT WORKING)
+// =====================
 exports.getInstagramMedia = async (req, res) => {
   try {
     const token = req.session.instagramToken;
