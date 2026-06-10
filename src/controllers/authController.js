@@ -6,9 +6,9 @@ exports.facebookLogin = (req, res) => {
     "public_profile,email,pages_show_list,pages_read_engagement";
 
   const loginUrl =
-    `https://www.facebook.com/${config.GRAPH_VERSION}/dialog/oauth` +
+    `https://www.facebook.com/v21.0/dialog/oauth` +
     `?client_id=${config.APP_ID}` +
-    `&redirect_uri=${config.FACEBOOK_REDIRECT_URI}` +
+    `&redirect_uri=${encodeURIComponent(config.FACEBOOK_REDIRECT_URI)}` +
     `&scope=${scope}`;
 
   res.redirect(loginUrl);
