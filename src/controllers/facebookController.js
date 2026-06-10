@@ -21,7 +21,7 @@ exports.facebookLogin = (req, res) => {
 };
 
 // ==============================
-// FACEBOOK CALLBACK
+// FACEBOOK CALLBACK (FIXED)
 // ==============================
 exports.facebookCallback = async (req, res) => {
   try {
@@ -31,6 +31,11 @@ exports.facebookCallback = async (req, res) => {
 
     if (!code) {
       return res.status(400).send("No code received");
+    }
+
+    // 🔥 FIX 1: prevent duplicate code usage
+    if (req.session.usedFacebookCode === code) {
+      return res.redirect("/facebook.html");
     }
 
     console.log("REDIRECT URI USED:", REDIRECT_URI);
@@ -61,6 +66,9 @@ exports.facebookCallback = async (req, res) => {
     // STORE IN SESSION
     req.session.fbAccessToken = accessToken;
     req.session.facebookProfile = profile.data;
+
+    // 🔥 FIX 2: mark code as used
+    req.session.usedFacebookCode = code;
 
     return res.redirect("/facebook.html");
 
