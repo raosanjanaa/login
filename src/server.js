@@ -11,34 +11,21 @@ const instagramRoutes = require("./routes/instagramRoutes");
 
 const app = express();
 
+// SECURITY
 app.use(
   helmet({
     contentSecurityPolicy: {
       directives: {
         defaultSrc: ["'self'"],
-
-        styleSrc: [
-          "'self'",
-          "'unsafe-inline'",
-          "https://fonts.googleapis.com"
-        ],
-
-        fontSrc: [
-          "'self'",
-          "https://fonts.gstatic.com"
-        ],
-
+        styleSrc: ["'self'", "'unsafe-inline'", "https://fonts.googleapis.com"],
+        fontSrc: ["'self'", "https://fonts.gstatic.com"],
         imgSrc: [
           "'self'",
           "data:",
           "https://platform-lookaside.fbsbx.com",
           "https://scontent.xx.fbcdn.net"
         ],
-
-        scriptSrc: [
-          "'self'",
-          "'unsafe-inline'"
-        ]
+        scriptSrc: ["'self'", "'unsafe-inline'"]
       }
     }
   })
@@ -46,28 +33,30 @@ app.use(
 
 app.use(express.json());
 
+// SESSION (IMPORTANT for Facebook login)
 app.use(
   session({
     secret: process.env.SESSION_SECRET,
     resave: false,
-    saveUninitialized: false
+    saveUninitialized: false,
+    cookie: {
+      secure: true, // required on Render (HTTPS)
+      sameSite: "none"
+    }
   })
 );
 
-app.use(
-  express.static(
-    path.join(__dirname, "../public")
-  )
-);
+// STATIC FILES
+app.use(express.static(path.join(__dirname, "../public")));
 
-app.use(authRoutes);
-app.use(facebookRoutes);
-app.use(instagramRoutes);
+// ROUTES (CLEAN PREFIX SYSTEM)
+app.use("/auth", authRoutes);
+app.use("/api", facebookRoutes);
+app.use("/api/instagram", instagramRoutes);
 
+// HOME
 app.get("/", (req, res) => {
-  res.sendFile(
-    path.join(__dirname, "../public/index.html")
-  );
+  res.sendFile(path.join(__dirname, "../public/index.html"));
 });
 
 const PORT = process.env.PORT || 5000;
