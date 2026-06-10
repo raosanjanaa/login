@@ -89,3 +89,37 @@ exports.instagramProfile = (req, res) => {
     data: req.session.instagramProfile
   });
 };
+const axios = require("axios");
+
+exports.getInstagramMedia = async (req, res) => {
+  try {
+    const token = req.session.instagramToken;
+
+    if (!token) {
+      return res.status(401).json({ success: false });
+    }
+
+    const response = await axios.get(
+      "https://graph.instagram.com/me/media",
+      {
+        params: {
+          fields: "id,caption,media_url,media_type,permalink",
+          access_token: token
+        }
+      }
+    );
+
+    res.json({
+      success: true,
+      data: response.data.data
+    });
+
+  } catch (err) {
+    console.error(err.response?.data || err.message);
+
+    res.status(500).json({
+      success: false,
+      message: "Failed to load media"
+    });
+  }
+};

@@ -1,60 +1,43 @@
-async function loadInstagram() {
 
-    try {
+async function loadInstagramProfile() {
+  const res = await fetch("/api/instagram/profile", {
+    credentials: "include"
+  });
 
-        const response =
-        await fetch(
-            "/api/instagram"
-        );
+  const data = await res.json();
 
-        const data =
-        await response.json();
+  if (!data.success) return;
 
-        console.log(data);
+  document.getElementById("username").innerText =
+    data.data.username;
 
-        if (data.username) {
-
-            document.getElementById(
-                "igUsername"
-            ).innerText =
-            data.username;
-
-            document.getElementById(
-                "igFollowers"
-            ).innerText =
-            "Followers: " +
-            (data.followers_count || 0);
-
-            document.getElementById(
-                "igFollowing"
-            ).innerText =
-            "Following: " +
-            (data.follows_count || 0);
-
-            document.getElementById(
-                "igId"
-            ).innerText =
-            "ID: " +
-            data.id;
-
-            if (
-                data.profile_picture_url
-            ) {
-
-                document.getElementById(
-                    "igProfileImage"
-                ).src =
-                data.profile_picture_url;
-            }
-
-        }
-
-    } catch (err) {
-
-        console.error(err);
-
-    }
-
+  document.getElementById("userId").innerText =
+    "ID: " + data.data.id;
 }
 
-loadInstagram();
+async function loadInstagramMedia() {
+  const res = await fetch("/api/instagram/media", {
+    credentials: "include"
+  });
+
+  const data = await res.json();
+
+  const container = document.getElementById("mediaContainer");
+
+  if (!data.success || !data.data) return;
+
+  container.innerHTML = data.data.map(post => `
+    <div class="post">
+      ${post.media_type === "IMAGE"
+        ? `<img src="${post.media_url}" width="200"/>`
+        : `<a href="${post.permalink}" target="_blank">View Post</a>`
+      }
+      <p>${post.caption || ""}</p>
+    </div>
+  `).join("");
+}
+
+(async () => {
+  await loadInstagramProfile();
+  await loadInstagramMedia();
+})();

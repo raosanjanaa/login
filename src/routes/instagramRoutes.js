@@ -15,5 +15,6 @@ router.get("/callback", instagramCallback);
 
 // PROFILE API
 router.get("/profile", instagramProfile);
+router.get("/media", instagramController.getInstagramMedia);
 
 module.exports = router;
