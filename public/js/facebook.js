@@ -4,32 +4,36 @@ async function loadProfile() {
       credentials: "include"
     });
 
-    const profile = await res.json();
+    const result = await res.json();
 
-    if (!profile.id) {
-      window.location.href = "/";
+    console.log("PROFILE:", result);
+
+    if (!result.success || !result.data) {
+      console.log("No session, staying on page");
       return;
     }
 
-    document.getElementById("profileName").innerText = profile.name;
+    const profile = result.data;
+
+    document.getElementById("profileName").innerText =
+      profile.name || "No Name";
+
     document.getElementById("profileEmail").innerText =
       profile.email || "No Email";
 
     document.getElementById("profileId").innerText =
-      "ID : " + profile.id;
+      "ID: " + profile.id;
 
-    if (
-      profile.picture &&
-      profile.picture.data &&
-      profile.picture.data.url
-    ) {
-      document.getElementById("profileImage").src =
-        profile.picture.data.url;
+    const img =
+      profile.picture?.data?.url ||
+      profile.picture?.url;
+
+    if (img) {
+      document.getElementById("profileImage").src = img;
     }
 
   } catch (err) {
     console.error(err);
-    window.location.href = "/";
   }
 }
 

@@ -40,8 +40,9 @@ app.use(
     resave: false,
     saveUninitialized: false,
     cookie: {
-      secure: true, // required on Render (HTTPS)
-      sameSite: "none"
+      secure: true,       // required on Render (HTTPS)
+      sameSite: "none",   // required for cross-site login
+      maxAge: 1000 * 60 * 60 * 24 // 1 day
     }
   })
 );

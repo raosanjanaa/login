@@ -19,13 +19,16 @@ router.get("/facebook/callback", facebookCallback);
 // =======================
 router.get("/profile", (req, res) => {
   if (!req.session?.facebookProfile) {
-    return res.status(401).json({
+    return res.json({
       success: false,
       message: "Not logged in"
     });
   }
 
-  return res.json(req.session.facebookProfile);
+  return res.json({
+    success: true,
+    data: req.session.facebookProfile
+  });
 });
 
 // =======================
