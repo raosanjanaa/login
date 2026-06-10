@@ -26,3 +26,4 @@ exports.getPages = async (req, res) => {
     });
   }
 };
+console.log("REDIRECT URI USED:", config.FACEBOOK_REDIRECT_URI);
