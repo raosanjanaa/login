@@ -11,7 +11,14 @@ const instagramRoutes = require("./routes/instagramRoutes");
 
 const app = express();
 
-// SECURITY
+/* =========================
+   TRUST PROXY (IMPORTANT FOR RENDER)
+========================= */
+app.set("trust proxy", 1);
+
+/* =========================
+   SECURITY HEADERS
+========================= */
 app.use(
   helmet({
     contentSecurityPolicy: {
@@ -31,35 +38,50 @@ app.use(
   })
 );
 
+/* =========================
+   BODY PARSER
+========================= */
 app.use(express.json());
 
-// SESSION (IMPORTANT for Facebook login)
+/* =========================
+   SESSION CONFIG (FIXED)
+========================= */
 app.use(
   session({
     secret: process.env.SESSION_SECRET,
     resave: false,
     saveUninitialized: false,
+    proxy: true, // IMPORTANT for Render
     cookie: {
-      secure: true,       // required on Render (HTTPS)
-      sameSite: "none",   // required for cross-site login
+      secure: true,      // HTTPS only (Render)
+      sameSite: "none",  // REQUIRED for OAuth
       maxAge: 1000 * 60 * 60 * 24 // 1 day
     }
   })
 );
 
-// STATIC FILES
+/* =========================
+   STATIC FILES
+========================= */
 app.use(express.static(path.join(__dirname, "../public")));
 
-// ROUTES (CLEAN PREFIX SYSTEM)
+/* =========================
+   ROUTES
+========================= */
 app.use("/auth", authRoutes);
 app.use("/api", facebookRoutes);
 app.use("/api/instagram", instagramRoutes);
 
-// HOME
+/* =========================
+   HOME ROUTE
+========================= */
 app.get("/", (req, res) => {
   res.sendFile(path.join(__dirname, "../public/index.html"));
 });
 
+/* =========================
+   START SERVER
+========================= */
 const PORT = process.env.PORT || 5000;
 
 app.listen(PORT, () => {
