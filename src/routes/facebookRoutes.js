@@ -1,42 +1,19 @@
 const express = require("express");
-
 const router = express.Router();
 
 const {
-    getPages
+  facebookLogin,
+  facebookCallback
 } = require("../controllers/facebookController");
 
-router.get("/api/profile", (req, res) => {
+// ==============================
+// FACEBOOK LOGIN
+// ==============================
+router.get("/auth/facebook", facebookLogin);
 
-    if (!req.session.facebookProfile) {
-
-        return res.status(401).json({
-            authenticated: false
-        });
-
-    }
-
-    res.json(
-        req.session.facebookProfile
-    );
-
-});
-
-router.get(
-    "/api/pages",
-    getPages
-);
-
-router.get(
-    "/api/check-facebook-session",
-    (req, res) => {
-
-        res.json({
-            authenticated:
-                !!req.session.facebookProfile
-        });
-
-    }
-);
+// ==============================
+// FACEBOOK CALLBACK
+// ==============================
+router.get("/auth/facebook/callback", facebookCallback);
 
 module.exports = router;
