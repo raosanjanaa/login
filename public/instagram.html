@@ -1,0 +1,140 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+
+<meta charset="UTF-8">
+<meta name="viewport" content="width=device-width, initial-scale=1.0">
+
+<title>Instagram Dashboard</title>
+
+<link rel="stylesheet" href="/css/dashboard.css">
+
+<link rel="preconnect" href="https://fonts.googleapis.com">
+
+<link href="https://fonts.googleapis.com/css2?family=Poppins:wght@300;400;500;600;700&display=swap" rel="stylesheet">
+
+</head>
+
+<body>
+
+<div class="bg"></div>
+
+<div class="floating orb1"></div>
+<div class="floating orb2"></div>
+<div class="floating orb3"></div>
+
+<div class="layout">
+
+    <aside class="sidebar">
+
+        <div class="brand">
+            META
+            <span>DASHBOARD</span>
+        </div>
+
+        <nav>
+
+            <a class="active">
+                Instagram Dashboard
+            </a>
+
+            <a>
+                Profile
+            </a>
+
+            <a>
+                Posts
+            </a>
+
+            <a>
+                Comments
+            </a>
+
+            <a>
+                Messages
+            </a>
+
+        </nav>
+
+        <a href="/logout" class="logout-btn">
+            Logout
+        </a>
+
+    </aside>
+
+    <main class="main-content">
+
+        <div class="topbar">
+
+            <h1>
+                Instagram Dashboard
+            </h1>
+
+            <div class="status">
+                Connected
+            </div>
+
+        </div>
+
+        <section>
+
+            <div class="glass profile-card">
+
+                <div class="profile-left">
+
+                    <img
+                    id="igProfileImage"
+                    src=""
+                    alt="Instagram Profile">
+
+                </div>
+
+                <div class="profile-right">
+
+                    <h2 id="igUsername">
+                        Loading...
+                    </h2>
+
+                    <p id="igFollowers">
+                        Followers: --
+                    </p>
+
+                    <p id="igFollowing">
+                        Following: --
+                    </p>
+
+                    <p id="igId">
+                        ID: --
+                    </p>
+
+                </div>
+
+            </div>
+
+        </section>
+
+        <section
+        class="glass pages-section">
+
+            <div class="section-title">
+
+                Instagram Posts
+
+            </div>
+
+            <div id="postsContainer">
+
+                No posts loaded yet.
+
+            </div>
+
+        </section>
+
+    </main>
+
+</div>
+
+<script src="/js/instagram.js"></script>
+
+</body>
+</html>

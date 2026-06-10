@@ -1,39 +1,109 @@
 <!DOCTYPE html>
 <html lang="en">
 <head>
-  <meta charset="UTF-8" />
-  <meta name="viewport" content="width=device-width, initial-scale=1.0"/>
-  <title>Meta Social Dashboard</title>
 
-  <link rel="stylesheet" href="style.css">
+<meta charset="UTF-8">
+<meta name="viewport" content="width=device-width, initial-scale=1.0">
+
+<title>Meta Social Dashboard</title>
+
+<link rel="stylesheet" href="/css/style.css">
+
+<link rel="preconnect" href="https://fonts.googleapis.com">
+
+<link href="https://fonts.googleapis.com/css2?family=Poppins:wght@300;400;500;600;700&display=swap" rel="stylesheet">
+
 </head>
+
 <body>
 
-<div class="background"></div>
+<div class="bg"></div>
 
-<div class="card">
+<div class="orb orb1"></div>
+<div class="orb orb2"></div>
+<div class="orb orb3"></div>
 
-  <h1>Meta Dashboard</h1>
+<nav class="navbar">
 
-  <p class="subtitle">
-    Connect Facebook or Instagram
-  </p>
+    <div class="logo">
+        META DASHBOARD
+    </div>
 
- <button id="fbBtn" class="fb-btn">
-  Continue with Facebook
-</button>
+    <div class="nav-links">
 
-<button id="igBtn" class="ig-btn">
-  Continue with Instagram
-</button>
+        <a href="/">Home</a>
 
-<script src="script.js"></script>
+        <a href="#">
+            Facebook
+        </a>
 
-  <div id="profile"></div>
+        <a href="#">
+            Instagram
+        </a>
 
-</div>
+    </div>
 
-<script src="script.js"></script>
+</nav>
+
+<section class="hero">
+
+    <div class="hero-card">
+
+        <div class="badge">
+
+            Official Meta Integration
+
+        </div>
+
+        <h1>
+
+            Meta Social Dashboard
+
+        </h1>
+
+        <p>
+
+            Connect your Facebook and Instagram accounts
+            using official Meta APIs and manage everything
+            from one beautiful dashboard.
+
+        </p>
+
+        <div class="login-buttons">
+
+            <a
+            href="/auth/facebook"
+            class="btn facebook-btn">
+
+                Continue with Facebook
+
+            </a>
+
+            <a
+            href="#"
+            class="btn instagram-btn">
+
+                Continue with Instagram
+
+            </a>
+
+        </div>
+
+    </div>
+
+</section>
+
+<footer>
+
+    <div class="footer-card">
+
+        Powered by Meta APIs
+
+    </div>
+
+</footer>
+
+<script src="/js/script.js"></script>
 
 </body>
 </html>
