@@ -1,29 +1,19 @@
 const express = require("express");
-
 const router = express.Router();
 
 const {
   instagramLogin,
-  instagramCallback
+  instagramCallback,
+  instagramProfile
 } = require("../controllers/instagramController");
 
-const {
-  getInstagramAccount
-} = require("../controllers/instagramDataController");
+// LOGIN
+router.get("/auth", instagramLogin);
 
-router.get(
-  "/auth/instagram",
-  instagramLogin
-);
+// CALLBACK
+router.get("/callback", instagramCallback);
 
-router.get(
-  "/auth/instagram/callback",
-  instagramCallback
-);
-
-router.get(
-  "/api/instagram",
-  getInstagramAccount
-);
+// PROFILE API
+router.get("/profile", instagramProfile);
 
 module.exports = router;

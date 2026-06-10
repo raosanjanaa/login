@@ -7,5 +7,6 @@ module.exports = {
   APP_ID: process.env.META_APP_ID,
   APP_SECRET: process.env.META_APP_SECRET,
 
-  FACEBOOK_REDIRECT_URI: REDIRECT_URI
+  FACEBOOK_REDIRECT_URI: REDIRECT_URI,
+  INSTAGRAM_REDIRECT_URI: `${BASE_URL}/auth/instagram/callback`
 };

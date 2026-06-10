@@ -4,12 +4,28 @@ const router = express.Router();
 const {
   facebookLogin,
   facebookCallback
-} = require("../controllers/facebookController");
+} = require("../controllers/authController");
 
-// ✅ LOGIN (IMPORTANT: NO /auth prefix here)
+// FACEBOOK LOGIN
 router.get("/facebook", facebookLogin);
 
-// CALLBACK
+// FACEBOOK CALLBACK
 router.get("/facebook/callback", facebookCallback);
+
+// LOGOUT (FIXED)
+router.get("/logout", (req, res) => {
+  req.session.destroy((err) => {
+    if (err) {
+      return res.status(500).json({
+        success: false,
+        message: "Logout failed"
+      });
+    }
+
+    res.clearCookie("connect.sid");
+
+    return res.redirect("/");
+  });
+});
 
 module.exports = router;

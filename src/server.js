@@ -70,8 +70,7 @@ app.use(express.static(path.join(__dirname, "../public")));
 ========================= */
 app.use("/auth", authRoutes);
 app.use("/api", facebookRoutes);
-app.use("/api/instagram", instagramRoutes);
-
+app.use("/api/instagram", require("./routes/instagramRoutes"));
 /* =========================
    HOME ROUTE
 ========================= */
@@ -87,3 +86,4 @@ const PORT = process.env.PORT || 5000;
 app.listen(PORT, () => {
   console.log(`Server running on ${PORT}`);
 });
+console.log("Auth routes loaded");
