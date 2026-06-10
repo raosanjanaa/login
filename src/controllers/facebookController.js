@@ -35,6 +35,7 @@ exports.facebookCallback = async (req, res) => {
 
     console.log("REDIRECT URI USED:", REDIRECT_URI);
 
+    // STEP 1: GET ACCESS TOKEN
     const tokenResponse = await axios.get(
       "https://graph.facebook.com/v21.0/oauth/access_token",
       {
@@ -49,6 +50,7 @@ exports.facebookCallback = async (req, res) => {
 
     const accessToken = tokenResponse.data.access_token;
 
+    // STEP 2: GET PROFILE
     const profile = await axios.get("https://graph.facebook.com/me", {
       params: {
         fields: "id,name,email,picture",
@@ -56,6 +58,7 @@ exports.facebookCallback = async (req, res) => {
       }
     });
 
+    // STORE IN SESSION
     req.session.fbAccessToken = accessToken;
     req.session.facebookProfile = profile.data;
 
