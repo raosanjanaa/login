@@ -8,7 +8,6 @@ require("dotenv").config();
 const authRoutes = require("./routes/authRoutes");
 const facebookRoutes = require("./routes/facebookRoutes");
 const instagramRoutes = require("./routes/instagramRoutes");
-
 const app = express();
 
 /* =========================
@@ -70,7 +69,7 @@ app.use(express.static(path.join(__dirname, "../public")));
 ========================= */
 app.use("/auth", authRoutes);
 app.use("/api", facebookRoutes);
-app.use("/api/instagram", require("./routes/instagramRoutes"));
+app.use("/api/instagram", instagramRoutes);
 /* =========================
    HOME ROUTE
 ========================= */

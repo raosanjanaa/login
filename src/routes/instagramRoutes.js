@@ -4,17 +4,13 @@ const router = express.Router();
 const {
   instagramLogin,
   instagramCallback,
-  instagramProfile
+  instagramProfile,
+  getInstagramMedia
 } = require("../controllers/instagramController");
 
-// LOGIN
 router.get("/auth", instagramLogin);
-
-// CALLBACK
 router.get("/callback", instagramCallback);
-
-// PROFILE API
 router.get("/profile", instagramProfile);
-router.get("/media", instagramController.getInstagramMedia);
+router.get("/media", getInstagramMedia);
 
 module.exports = router;
