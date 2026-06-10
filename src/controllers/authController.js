@@ -47,17 +47,16 @@ exports.facebookCallback = async (req, res) => {
     // STEP 1: EXCHANGE CODE FOR TOKEN
     // ==============================
     const tokenResponse = await axios.get(
-      `https://graph.facebook.com/${config.GRAPH_VERSION}/oauth/access_token`,
-      {
-        params: {
-          client_id: config.APP_ID,
-          client_secret: config.APP_SECRET,
-          redirect_uri: config.FACEBOOK_REDIRECT_URI,
-          code
-        }
-      }
-    );
-
+  "https://graph.facebook.com/oauth/access_token",
+  {
+    params: {
+      client_id: config.APP_ID,
+      client_secret: config.APP_SECRET,
+      redirect_uri: config.FACEBOOK_REDIRECT_URI,
+      code
+    }
+  }
+);
     const accessToken = tokenResponse.data.access_token;
 
     if (!accessToken) {
