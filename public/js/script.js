@@ -1,6 +1,9 @@
 async function loadProfile() {
   try {
-    const response = await fetch("/api/profile");
+    const response = await fetch("/api/profile", {
+      credentials: "include"
+    });
+
     const profile = await response.json();
 
     const dashboard = document.getElementById("dashboard");
@@ -34,6 +37,7 @@ async function loadProfile() {
 
       </div>
     `;
+
   } catch (error) {
     console.error("Profile Load Error:", error);
   }
