@@ -28,28 +28,10 @@ app.use(
     contentSecurityPolicy: {
       directives: {
         defaultSrc: ["'self'"],
-
-        styleSrc: [
-          "'self'",
-          "'unsafe-inline'",
-          "https://fonts.googleapis.com"
-        ],
-
-        fontSrc: [
-          "'self'",
-          "https://fonts.gstatic.com"
-        ],
-
-        imgSrc: [
-          "'self'",
-          "data:",
-          "https:"
-        ],
-
-        scriptSrc: [
-          "'self'",
-          "'unsafe-inline'"
-        ]
+        styleSrc: ["'self'", "'unsafe-inline'", "https://fonts.googleapis.com"],
+        fontSrc: ["'self'", "https://fonts.gstatic.com"],
+        imgSrc: ["'self'", "data:", "https:"],
+        scriptSrc: ["'self'", "'unsafe-inline'"]
       }
     }
   })
@@ -70,13 +52,9 @@ SESSION
 app.use(
   session({
     secret: process.env.SESSION_SECRET,
-
     resave: false,
-
     saveUninitialized: false,
-
     proxy: true,
-
     cookie: {
       secure: true,
       sameSite: "none",
@@ -84,20 +62,30 @@ app.use(
     }
   })
 );
-app.use(express.static(path.join(__dirname, "../public")));
+
 /*
 =========================
 STATIC FILES
 =========================
 */
-app.use(
-  express.static(
-    path.join(
-      __dirname,
-      "../public"
-    )
-  )
-);
+app.use(express.static(path.join(__dirname, "../public")));
+
+/*
+=========================
+PAGES (CLEAN URLS)
+=========================
+*/
+app.get("/privacy", (req, res) => {
+  res.sendFile(path.join(__dirname, "../public/privacy.html"));
+});
+
+app.get("/terms", (req, res) => {
+  res.sendFile(path.join(__dirname, "../public/terms.html"));
+});
+
+app.get("/delete", (req, res) => {
+  res.sendFile(path.join(__dirname, "../public/delete.html"));
+});
 
 /*
 =========================
@@ -105,13 +93,8 @@ ROUTES
 =========================
 */
 app.use("/auth", authRoutes);
-
 app.use("/api", facebookRoutes);
-
-app.use(
-  "/api/instagram",
-  instagramRoutes
-);
+app.use("/api/instagram", instagramRoutes);
 
 /*
 =========================
@@ -119,14 +102,7 @@ HOME
 =========================
 */
 app.get("/", (req, res) => {
-
-  res.sendFile(
-    path.join(
-      __dirname,
-      "../public/index.html"
-    )
-  );
-
+  res.sendFile(path.join(__dirname, "../public/index.html"));
 });
 
 /*
@@ -134,13 +110,8 @@ app.get("/", (req, res) => {
 START SERVER
 =========================
 */
-const PORT =
-  process.env.PORT || 5000;
+const PORT = process.env.PORT || 5000;
 
 app.listen(PORT, () => {
-
-  console.log(
-    `Server running on ${PORT}`
-  );
-
+  console.log(`Server running on ${PORT}`);
 });
