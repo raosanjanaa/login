@@ -8,81 +8,139 @@ require("dotenv").config();
 const authRoutes = require("./routes/authRoutes");
 const facebookRoutes = require("./routes/facebookRoutes");
 const instagramRoutes = require("./routes/instagramRoutes");
+
 const app = express();
 
-/* =========================
-   TRUST PROXY (IMPORTANT FOR RENDER)
-========================= */
+/*
+=========================
+TRUST PROXY
+=========================
+*/
 app.set("trust proxy", 1);
 
-/* =========================
-   SECURITY HEADERS
-========================= */
+/*
+=========================
+HELMET
+=========================
+*/
 app.use(
   helmet({
     contentSecurityPolicy: {
       directives: {
         defaultSrc: ["'self'"],
-        styleSrc: ["'self'", "'unsafe-inline'", "https://fonts.googleapis.com"],
-        fontSrc: ["'self'", "https://fonts.gstatic.com"],
+
+        styleSrc: [
+          "'self'",
+          "'unsafe-inline'",
+          "https://fonts.googleapis.com"
+        ],
+
+        fontSrc: [
+          "'self'",
+          "https://fonts.gstatic.com"
+        ],
+
         imgSrc: [
           "'self'",
           "data:",
-          "https://platform-lookaside.fbsbx.com",
-          "https://scontent.xx.fbcdn.net"
+          "https:"
         ],
-        scriptSrc: ["'self'", "'unsafe-inline'"]
+
+        scriptSrc: [
+          "'self'",
+          "'unsafe-inline'"
+        ]
       }
     }
   })
 );
 
-/* =========================
-   BODY PARSER
-========================= */
+/*
+=========================
+BODY PARSER
+=========================
+*/
 app.use(express.json());
 
-/* =========================
-   SESSION CONFIG (FIXED)
-========================= */
+/*
+=========================
+SESSION
+=========================
+*/
 app.use(
   session({
     secret: process.env.SESSION_SECRET,
+
     resave: false,
+
     saveUninitialized: false,
-    proxy: true, // IMPORTANT for Render
+
+    proxy: true,
+
     cookie: {
-      secure: true,      // HTTPS only (Render)
-      sameSite: "none",  // REQUIRED for OAuth
-      maxAge: 1000 * 60 * 60 * 24 // 1 day
+      secure: true,
+      sameSite: "none",
+      maxAge: 1000 * 60 * 60 * 24
     }
   })
 );
 
-/* =========================
-   STATIC FILES
-========================= */
-app.use(express.static(path.join(__dirname, "../public")));
+/*
+=========================
+STATIC FILES
+=========================
+*/
+app.use(
+  express.static(
+    path.join(
+      __dirname,
+      "../public"
+    )
+  )
+);
 
-/* =========================
-   ROUTES
-========================= */
+/*
+=========================
+ROUTES
+=========================
+*/
 app.use("/auth", authRoutes);
+
 app.use("/api", facebookRoutes);
-app.use("/api/instagram", instagramRoutes);
-/* =========================
-   HOME ROUTE
-========================= */
+
+app.use(
+  "/api/instagram",
+  instagramRoutes
+);
+
+/*
+=========================
+HOME
+=========================
+*/
 app.get("/", (req, res) => {
-  res.sendFile(path.join(__dirname, "../public/index.html"));
+
+  res.sendFile(
+    path.join(
+      __dirname,
+      "../public/index.html"
+    )
+  );
+
 });
 
-/* =========================
-   START SERVER
-========================= */
-const PORT = process.env.PORT || 5000;
+/*
+=========================
+START SERVER
+=========================
+*/
+const PORT =
+  process.env.PORT || 5000;
 
 app.listen(PORT, () => {
-  console.log(`Server running on ${PORT}`);
+
+  console.log(
+    `Server running on ${PORT}`
+  );
+
 });
-console.log("Auth routes loaded");
