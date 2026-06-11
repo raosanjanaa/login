@@ -14,6 +14,6 @@ module.exports = {
   INSTAGRAM_APP_SECRET: process.env.INSTAGRAM_APP_SECRET,
 
   FACEBOOK_REDIRECT_URI: REDIRECT_URI,
-  INSTAGRAM_REDIRECT_URI: `${BASE_URL}/api/instagram/callback`
+  INSTAGRAM_REDIRECT_URI: `${BASE_URL}/api/instagram/callback`,
   GRAPH_VERSION: "v21.0"
 };
