@@ -1,59 +1,140 @@
 
 async function loadInstagramProfile() {
-  const res = await fetch("/api/instagram/profile", {
-    credentials: "include"
-  });
+try {
+const res = await fetch("/api/instagram/profile", {
+credentials: "include"
+});
 
-  const data = await res.json();
+```
+const data = await res.json();
 
-  if (!data.success) return;
+if (!data.success) {
+  console.log("Instagram profile not found");
+  return;
+}
 
-  document.getElementById("username").innerText =
-    data.data.username;
+const username = data.data.username || "Unknown User";
+const userId = data.data.id || "Unknown ID";
 
-  document.getElementById("userId").innerText =
-    "ID: " + data.data.id;
+// Stats Cards
+const usernameCard =
+  document.getElementById("username");
+
+const userIdCard =
+  document.getElementById("userId");
+
+if (usernameCard)
+  usernameCard.innerText = username;
+
+if (userIdCard)
+  userIdCard.innerText = userId;
+
+// Profile Card
+const profileName =
+  document.getElementById("igUsername");
+
+const profileId =
+  document.getElementById("igId");
+
+if (profileName)
+  profileName.innerText = username;
+
+if (profileId)
+  profileId.innerText = "ID: " + userId;
+```
+
+} catch (err) {
+console.error(
+"Profile Load Error:",
+err
+);
+}
 }
 
 async function loadInstagramMedia() {
+try {
 
-  const res = await fetch(
-    "/api/instagram/media",
-    {
-      credentials: "include"
-    }
+```
+const res = await fetch(
+  "/api/instagram/media",
+  {
+    credentials: "include"
+  }
+);
+
+const data = await res.json();
+
+const container =
+  document.getElementById(
+    "mediaContainer"
   );
 
-  const data = await res.json();
+if (!container)
+  return;
 
-  const container =
-    document.getElementById(
-      "mediaContainer"
-    );
+if (!data.success || !data.data) {
 
-  if (!data.success || !data.data)
-    return;
+  container.innerHTML = `
+    <div class="glass post-card">
+      <div class="post-content">
+        <p>No Instagram posts found.</p>
+      </div>
+    </div>
+  `;
 
+  return;
+}
+
+const postCount =
   document.getElementById(
     "postCount"
-  ).innerText = data.data.length;
+  );
 
-  container.innerHTML =
-    data.data.map(post => `
+if (postCount)
+  postCount.innerText =
+    data.data.length;
+
+container.innerHTML =
+  data.data.map(post => {
+
+    let mediaContent = "";
+
+    if (
+      post.media_type === "IMAGE" ||
+      post.media_type === "CAROUSEL_ALBUM"
+    ) {
+
+      mediaContent = `
+        <img
+          src="${post.media_url}"
+          alt="Instagram Post"
+          class="post-image"
+        />
+      `;
+
+    } else {
+
+      mediaContent = `
+        <div
+          class="post-image"
+          style="
+            display:flex;
+            align-items:center;
+            justify-content:center;
+            font-size:24px;
+          "
+        >
+          🎬 Reel / Video
+        </div>
+      `;
+
+    }
+
+    return `
 
       <div class="glass post-card">
 
-        ${
-          post.media_url
-          ?
-          `<img
-             src="${post.media_url}"
-             alt="Instagram Post"
-             class="post-image"
-           />`
-          :
-          ""
-        }
+        ${mediaContent}
 
         <div class="post-content">
 
@@ -73,66 +154,49 @@ async function loadInstagramMedia() {
 
       </div>
 
-    `).join("");
+    `;
+
+  }).join("");
+```
+
+} catch (err) {
+
+```
+console.error(
+  "Media Load Error:",
+  err
+);
+
+const container =
+  document.getElementById(
+    "mediaContainer"
+  );
+
+if (container) {
+
+  container.innerHTML = `
+    <div class="glass post-card">
+      <div class="post-content">
+        <p>Failed to load posts.</p>
+      </div>
+    </div>
+  `;
 
 }
+```
 
-(async () => {
-  await loadInstagramProfile();
-  await loadInstagramMedia();
-})();
+}
+}
 
-document.addEventListener(
- "mousemove",
- e=>{
+window.addEventListener(
+"DOMContentLoaded",
+async () => {
 
-  document.body.style.setProperty(
-   "--x",
-   e.clientX+"px"
-  );
+```
+await loadInstagramProfile();
 
-  document.body.style.setProperty(
-   "--y",
-   e.clientY+"px"
-  );
+await loadInstagramMedia();
+```
 
- });
- document.querySelectorAll(".glass")
-.forEach(card=>{
-
-card.addEventListener(
-"mousemove",
-e=>{
-
-const rect=
-card.getBoundingClientRect();
-
-const x=
-e.clientX-rect.left;
-
-const y=
-e.clientY-rect.top;
-
-const rotateY=
-(x/rect.width-.5)*20;
-
-const rotateX=
-(y/rect.height-.5)*-20;
-
-card.style.transform=
-`perspective(1000px)
- rotateX(${rotateX}deg)
- rotateY(${rotateY}deg)`;
-
-});
-
-card.addEventListener(
-"mouseleave",
-()=>{
-
-card.style.transform=
-"perspective(1000px) rotateX(0) rotateY(0)";
-
-});
-
-});
+}
+);
