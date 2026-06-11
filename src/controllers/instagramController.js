@@ -1,11 +1,6 @@
 const axios = require("axios");
 const config = require("../config/metaConfig");
 
-/*
-=====================
-INSTAGRAM LOGIN
-=====================
-*/
 exports.instagramLogin = (req, res) => {
 
   const url =
@@ -18,73 +13,65 @@ exports.instagramLogin = (req, res) => {
     `&response_type=code` +
     `&scope=instagram_business_basic`;
 
-  console.log("Instagram Login URL:");
-  console.log(url);
-
   res.redirect(url);
+
 };
 
-/*
-=====================
-CALLBACK
-=====================
-*/
-exports.instagramCallback = async (req, res) => {
+exports.instagramCallback = async (
+  req,
+  res
+) => {
 
   try {
 
-    const {
-      code,
-      error,
-      error_reason,
-      error_description
-    } = req.query;
-
-    if (error) {
-      return res.status(400).json({
-        success: false,
-        error,
-        error_reason,
-        error_description
-      });
-    }
+    const { code } = req.query;
 
     if (!code) {
+
       return res.status(400).json({
         success: false,
         message: "No authorization code received"
       });
+
     }
 
-    const tokenRes = await axios.post(
-      "https://api.instagram.com/oauth/access_token",
-      new URLSearchParams({
-        client_id: config.INSTAGRAM_APP_ID,
-        client_secret: config.INSTAGRAM_APP_SECRET,
-        grant_type: "authorization_code",
-        redirect_uri: config.INSTAGRAM_REDIRECT_URI,
-        code
-      }).toString(),
-      {
-        headers: {
-          "Content-Type":
-            "application/x-www-form-urlencoded"
+    const tokenRes =
+      await axios.post(
+        "https://api.instagram.com/oauth/access_token",
+        new URLSearchParams({
+          client_id:
+            config.INSTAGRAM_APP_ID,
+          client_secret:
+            config.INSTAGRAM_APP_SECRET,
+          grant_type:
+            "authorization_code",
+          redirect_uri:
+            config.INSTAGRAM_REDIRECT_URI,
+          code
+        }).toString(),
+        {
+          headers: {
+            "Content-Type":
+              "application/x-www-form-urlencoded"
+          }
         }
-      }
-    );
+      );
 
     const accessToken =
       tokenRes.data.access_token;
 
-    const profileRes = await axios.get(
-      "https://graph.instagram.com/me",
-      {
-        params: {
-          fields: "id,username",
-          access_token: accessToken
+    const profileRes =
+      await axios.get(
+        "https://graph.instagram.com/me",
+        {
+          params: {
+            fields:
+              "id,username",
+            access_token:
+              accessToken
+          }
         }
-      }
-    );
+      );
 
     req.session.instagramToken =
       accessToken;
@@ -92,19 +79,7 @@ exports.instagramCallback = async (req, res) => {
     req.session.instagramProfile =
       profileRes.data;
 
-    req.session.save(err => {
-
-      if (err) {
-        console.error(
-          "Session Save Error:",
-          err
-        );
-
-        return res.status(500).json({
-          success: false,
-          message: "Session save failed"
-        });
-      }
+    req.session.save(() => {
 
       return res.redirect(
         "/instagram.html"
@@ -115,54 +90,43 @@ exports.instagramCallback = async (req, res) => {
   } catch (error) {
 
     console.error(
-      "INSTAGRAM ERROR:",
       error.response?.data ||
       error.message
     );
 
     return res.status(500).json({
       success: false,
-      message: "Instagram Login Failed",
-      error:
-        error.response?.data ||
-        error.message
+      message:
+        "Instagram Login Failed"
     });
 
   }
 
 };
 
-/*
-=====================
-PROFILE
-=====================
-*/
 exports.instagramProfile = (
   req,
   res
 ) => {
 
-  if (!req.session.instagramProfile) {
+  if (
+    !req.session.instagramProfile
+  ) {
 
     return res.json({
-      success: false,
-      message: "Not logged in"
+      success: false
     });
 
   }
 
   return res.json({
     success: true,
-    data: req.session.instagramProfile
+    data:
+      req.session.instagramProfile
   });
 
 };
 
-/*
-=====================
-MEDIA
-=====================
-*/
 exports.getInstagramMedia =
   async (req, res) => {
 
@@ -174,9 +138,7 @@ exports.getInstagramMedia =
       if (!token) {
 
         return res.status(401).json({
-          success: false,
-          message:
-            "Instagram token missing"
+          success: false
         });
 
       }
@@ -187,29 +149,30 @@ exports.getInstagramMedia =
           {
             params: {
               fields:
-                "id,caption,media_url,media_type,permalink",
-              access_token: token
+                "id,caption,media_url,thumbnail_url,media_type,permalink",
+              access_token:
+                token
             }
           }
         );
 
       return res.json({
         success: true,
-        data: response.data.data
+        data:
+          response.data.data
       });
 
-    } catch (error) {
+    } catch (err) {
 
       console.error(
-        "MEDIA ERROR:",
-        error.response?.data ||
-        error.message
+        err.response?.data ||
+        err.message
       );
 
       return res.status(500).json({
         success: false,
         message:
-          "Failed to load Instagram media"
+          "Failed to load media"
       });
 
     }

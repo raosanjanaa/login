@@ -1,8 +1,13 @@
 async function loadInstagramProfile() {
+
   try {
-    const res = await fetch("/api/instagram/profile", {
-      credentials: "include"
-    });
+
+    const res = await fetch(
+      "/api/instagram/profile",
+      {
+        credentials: "include"
+      }
+    );
 
     const data = await res.json();
 
@@ -11,128 +16,180 @@ async function loadInstagramProfile() {
       return;
     }
 
-    const username = data.data.username || "Unknown User";
-    const userId = data.data.id || "Unknown ID";
+    const username =
+      data.data.username || "Unknown User";
 
-    // Stats cards
-    const usernameCard = document.getElementById("username");
-    const userIdCard = document.getElementById("userId");
+    const userId =
+      data.data.id || "Unknown ID";
 
-    if (usernameCard) {
-      usernameCard.innerText = username;
-    }
+    document.getElementById(
+      "username"
+    ).innerText = username;
 
-    if (userIdCard) {
-      userIdCard.innerText = userId;
-    }
+    document.getElementById(
+      "userId"
+    ).innerText = userId;
 
-    // Profile section
-    const igUsername = document.getElementById("igUsername");
-    const igId = document.getElementById("igId");
+    const igUsername =
+      document.getElementById(
+        "igUsername"
+      );
+
+    const igId =
+      document.getElementById(
+        "igId"
+      );
 
     if (igUsername) {
-      igUsername.innerText = username;
+      igUsername.innerText =
+        username;
     }
 
     if (igId) {
-      igId.innerText = "ID: " + userId;
+      igId.innerText =
+        "ID: " + userId;
     }
 
   } catch (err) {
-    console.error("Profile Load Error:", err);
+
+    console.error(
+      "Profile Load Error:",
+      err
+    );
+
   }
+
 }
 
 async function loadInstagramMedia() {
+
   try {
-    const res = await fetch("/api/instagram/media", {
-      credentials: "include"
-    });
+
+    const res = await fetch(
+      "/api/instagram/media",
+      {
+        credentials: "include"
+      }
+    );
 
     const data = await res.json();
 
     const container =
-      document.getElementById("mediaContainer");
+      document.getElementById(
+        "mediaContainer"
+      );
 
-    if (!container) return;
+    if (!container)
+      return;
 
-    if (!data.success || !data.data) {
+    if (
+      !data.success ||
+      !data.data ||
+      data.data.length === 0
+    ) {
+
       container.innerHTML = `
         <div class="glass post-card">
           <div class="post-content">
-            <p>No posts found.</p>
+            <p>No Instagram posts found.</p>
           </div>
         </div>
       `;
+
       return;
+
     }
 
-    const postCount =
-      document.getElementById("postCount");
+    document.getElementById(
+      "postCount"
+    ).innerText =
+      data.data.length;
 
-    if (postCount) {
-      postCount.innerText = data.data.length;
-    }
+    container.innerHTML =
+      data.data.map(post => {
 
-    container.innerHTML = data.data.map(post => {
+        const imageUrl =
+          post.media_url ||
+          post.thumbnail_url;
 
-      let media = "";
+        let mediaHtml = "";
 
-      if (
-        post.media_type === "IMAGE" ||
-        post.media_type === "CAROUSEL_ALBUM"
-      ) {
-        media = `
-          <img
-            src="${post.media_url}"
-            alt="Instagram Post"
-            class="post-image"
-          >
-        `;
-      } else {
-        media = `
-          <div class="post-image" style="
-            display:flex;
-            align-items:center;
-            justify-content:center;
-            font-size:22px;
-          ">
-            🎬 Reel / Video
-          </div>
-        `;
-      }
+        if (imageUrl) {
 
-      return `
-        <div class="glass post-card">
-
-          ${media}
-
-          <div class="post-content">
-
-            <p class="post-caption">
-              ${post.caption || "No caption"}
-            </p>
-
-            <a
-              href="${post.permalink}"
-              target="_blank"
-              class="post-link"
+          mediaHtml = `
+            <img
+              src="${imageUrl}"
+              alt="Instagram Post"
+              class="post-image"
+              loading="lazy"
             >
-              Open Post →
-            </a>
+          `;
+
+        } else {
+
+          mediaHtml = `
+            <div
+              class="post-image"
+              style="
+                display:flex;
+                justify-content:center;
+                align-items:center;
+                font-size:22px;
+                font-weight:600;
+              "
+            >
+              🎬 Reel
+            </div>
+          `;
+
+        }
+
+        return `
+
+          <div class="glass post-card">
+
+            ${mediaHtml}
+
+            <div class="post-content">
+
+              <p class="post-caption">
+                ${post.caption || "No caption available"}
+              </p>
+
+              <a
+                href="${post.permalink}"
+                target="_blank"
+                class="post-link"
+              >
+                Open Post →
+              </a>
+
+            </div>
 
           </div>
 
-        </div>
-      `;
-    }).join("");
+        `;
+
+      }).join("");
 
   } catch (err) {
-    console.error("Media Load Error:", err);
+
+    console.error(
+      "Media Load Error:",
+      err
+    );
+
   }
+
 }
 
-window.addEventListener("DOMContentLoaded", async () => {
-  await loadInstagramProfile();
-  await loadInstagramMedia();
-});
+window.addEventListener(
+  "DOMContentLoaded",
+  async () => {
+
+    await loadInstagramProfile();
+
+    await loadInstagramMedia();
+
+  }
+);
