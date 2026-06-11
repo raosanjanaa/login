@@ -1,5 +1,6 @@
 <!DOCTYPE html>
 <html lang="en">
+
 <head>
 
 <meta charset="UTF-8">
@@ -14,7 +15,7 @@
 <link href="https://fonts.googleapis.com/css2?family=Poppins:wght@300;400;500;600;700&display=swap" rel="stylesheet">
 
 </head>
-<script src="/js/instagram.js"></script>
+
 <body>
 
 <div class="bg"></div>
@@ -25,46 +26,44 @@
 
 <div class="layout">
 
+    <!-- SIDEBAR -->
     <aside class="sidebar">
 
-        <div class="brand">
-            META
-            <span>DASHBOARD</span>
+        <div>
+
+            <div class="brand">
+                META
+                <span>INSTAGRAM DASHBOARD</span>
+            </div>
+
+            <nav>
+
+                <a class="active">
+                    Dashboard
+                </a>
+
+                <a>
+                    Profile
+                </a>
+
+                <a>
+                    Posts
+                </a>
+
+            </nav>
+
         </div>
 
-        <nav>
-
-            <a class="active">
-                Instagram Dashboard
-            </a>
-
-            <a>
-                Profile
-            </a>
-
-            <a>
-                Posts
-            </a>
-
-            <a>
-                Comments
-            </a>
-
-            <a>
-                Messages
-            </a>
-
-        </nav>
-
-        <a href="/auth/logout">Logout</a>
+        <a href="/auth/logout" class="logout-btn">
+            Logout
+        </a>
 
     </aside>
-    <h2 id="username">Loading username...</h2>
-<p id="userId"></p>
 
-<div id="mediaContainer"></div>
+    <!-- MAIN CONTENT -->
     <main class="main-content">
 
+        <!-- TOP BAR -->
         <div class="topbar">
 
             <h1>
@@ -77,16 +76,48 @@
 
         </div>
 
-        <section>
+        <!-- STATS -->
+        <div class="stats-grid">
+
+            <div class="glass stat-card">
+                <h3>Username</h3>
+                <span id="username">--</span>
+            </div>
+
+            <div class="glass stat-card">
+                <h3>Instagram ID</h3>
+                <span id="userId">--</span>
+            </div>
+
+            <div class="glass stat-card">
+                <h3>Total Posts</h3>
+                <span id="postCount">0</span>
+            </div>
+
+            <div class="glass stat-card">
+                <h3>Status</h3>
+                <span>Active</span>
+            </div>
+
+        </div>
+
+        <!-- PROFILE CARD -->
+        <section style="margin-top:30px;">
 
             <div class="glass profile-card">
 
                 <div class="profile-left">
 
                     <img
-                    id="igProfileImage"
-                    src=""
-                    alt="Instagram Profile">
+                        id="igProfileImage"
+                        src="https://cdn-icons-png.flaticon.com/512/3135/3135715.png"
+                        alt="Profile"
+                        style="
+                        width:120px;
+                        height:120px;
+                        border-radius:50%;
+                        object-fit:cover;
+                        ">
 
                 </div>
 
@@ -95,14 +126,6 @@
                     <h2 id="igUsername">
                         Loading...
                     </h2>
-
-                    <p id="igFollowers">
-                        Followers: --
-                    </p>
-
-                    <p id="igFollowing">
-                        Following: --
-                    </p>
 
                     <p id="igId">
                         ID: --
@@ -114,18 +137,26 @@
 
         </section>
 
-        <section
-        class="glass pages-section">
+        <!-- POSTS -->
+        <section class="glass pages-section">
 
             <div class="section-title">
-
-                Instagram Posts
-
+                Recent Instagram Posts
             </div>
 
-            <div id="postsContainer">
+            <div id="mediaContainer" class="posts-grid">
 
-                No posts loaded yet.
+                <div class="glass post-card">
+
+                    <div class="post-content">
+
+                        <p class="post-caption">
+                            Loading posts...
+                        </p>
+
+                    </div>
+
+                </div>
 
             </div>
 
@@ -138,4 +169,5 @@
 <script src="/js/instagram.js"></script>
 
 </body>
+
 </html>
