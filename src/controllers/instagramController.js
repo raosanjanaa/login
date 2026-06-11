@@ -1,188 +1,218 @@
-async function loadInstagramProfile() {
+const axios = require("axios");
+const config = require("../config/metaConfig");
 
-try {
+/*
+=====================
+INSTAGRAM LOGIN
+=====================
+*/
+exports.instagramLogin = (req, res) => {
 
-```
-const res = await fetch(
-  "/api/instagram/profile",
-  {
-    credentials: "include"
+  const url =
+    `https://www.instagram.com/oauth/authorize` +
+    `?force_reauth=true` +
+    `&client_id=${config.INSTAGRAM_APP_ID}` +
+    `&redirect_uri=${encodeURIComponent(
+      config.INSTAGRAM_REDIRECT_URI
+    )}` +
+    `&response_type=code` +
+    `&scope=instagram_business_basic`;
+
+  console.log("Instagram Login URL:");
+  console.log(url);
+
+  res.redirect(url);
+};
+
+/*
+=====================
+CALLBACK
+=====================
+*/
+exports.instagramCallback = async (req, res) => {
+
+  try {
+
+    const {
+      code,
+      error,
+      error_reason,
+      error_description
+    } = req.query;
+
+    if (error) {
+      return res.status(400).json({
+        success: false,
+        error,
+        error_reason,
+        error_description
+      });
+    }
+
+    if (!code) {
+      return res.status(400).json({
+        success: false,
+        message: "No authorization code received"
+      });
+    }
+
+    const tokenRes = await axios.post(
+      "https://api.instagram.com/oauth/access_token",
+      new URLSearchParams({
+        client_id: config.INSTAGRAM_APP_ID,
+        client_secret: config.INSTAGRAM_APP_SECRET,
+        grant_type: "authorization_code",
+        redirect_uri: config.INSTAGRAM_REDIRECT_URI,
+        code
+      }).toString(),
+      {
+        headers: {
+          "Content-Type":
+            "application/x-www-form-urlencoded"
+        }
+      }
+    );
+
+    const accessToken =
+      tokenRes.data.access_token;
+
+    const profileRes = await axios.get(
+      "https://graph.instagram.com/me",
+      {
+        params: {
+          fields: "id,username",
+          access_token: accessToken
+        }
+      }
+    );
+
+    req.session.instagramToken =
+      accessToken;
+
+    req.session.instagramProfile =
+      profileRes.data;
+
+    req.session.save(err => {
+
+      if (err) {
+        console.error(
+          "Session Save Error:",
+          err
+        );
+
+        return res.status(500).json({
+          success: false,
+          message: "Session save failed"
+        });
+      }
+
+      return res.redirect(
+        "/instagram.html"
+      );
+
+    });
+
+  } catch (error) {
+
+    console.error(
+      "INSTAGRAM ERROR:",
+      error.response?.data ||
+      error.message
+    );
+
+    return res.status(500).json({
+      success: false,
+      message: "Instagram Login Failed",
+      error:
+        error.response?.data ||
+        error.message
+    });
+
   }
-);
 
-const data = await res.json();
+};
 
-if (!data.success) {
-  console.log("Instagram profile not found");
-  return;
-}
+/*
+=====================
+PROFILE
+=====================
+*/
+exports.instagramProfile = (
+  req,
+  res
+) => {
 
-const username =
-  data.data.username || "Unknown User";
+  if (!req.session.instagramProfile) {
 
-const userId =
-  data.data.id || "Unknown ID";
+    return res.json({
+      success: false,
+      message: "Not logged in"
+    });
 
-// Stats Cards
-document.getElementById("username").innerText =
-  username;
-
-document.getElementById("userId").innerText =
-  userId;
-
-// Profile Card
-const profileName =
-  document.getElementById("igUsername");
-
-const profileId =
-  document.getElementById("igId");
-
-if (profileName)
-  profileName.innerText = username;
-
-if (profileId)
-  profileId.innerText = "ID: " + userId;
-```
-
-} catch (err) {
-
-```
-console.error(
-  "Profile Load Error:",
-  err
-);
-```
-
-}
-
-}
-
-async function loadInstagramMedia() {
-
-try {
-
-```
-const res = await fetch(
-  "/api/instagram/media",
-  {
-    credentials: "include"
   }
-);
 
-const data = await res.json();
+  return res.json({
+    success: true,
+    data: req.session.instagramProfile
+  });
 
-const container =
-  document.getElementById(
-    "mediaContainer"
-  );
+};
 
-if (!container)
-  return;
+/*
+=====================
+MEDIA
+=====================
+*/
+exports.getInstagramMedia =
+  async (req, res) => {
 
-if (!data.success || !data.data) {
+    try {
 
-  container.innerHTML = `
-    <div class="glass post-card">
-      <div class="post-content">
-        <p>No posts found.</p>
-      </div>
-    </div>
-  `;
+      const token =
+        req.session.instagramToken;
 
-  return;
-}
+      if (!token) {
 
-document.getElementById(
-  "postCount"
-).innerText = data.data.length;
+        return res.status(401).json({
+          success: false,
+          message:
+            "Instagram token missing"
+        });
 
-container.innerHTML =
-  data.data.map(post => {
+      }
 
-    let media = "";
+      const response =
+        await axios.get(
+          "https://graph.instagram.com/me/media",
+          {
+            params: {
+              fields:
+                "id,caption,media_url,media_type,permalink",
+              access_token: token
+            }
+          }
+        );
 
-    if (
-      post.media_type === "IMAGE" ||
-      post.media_type === "CAROUSEL_ALBUM"
-    ) {
+      return res.json({
+        success: true,
+        data: response.data.data
+      });
 
-      media = `
-        <img
-          src="${post.media_url}"
-          class="post-image"
-          alt="Instagram Post"
-        >
-      `;
+    } catch (error) {
 
-    } else {
+      console.error(
+        "MEDIA ERROR:",
+        error.response?.data ||
+        error.message
+      );
 
-      media = `
-        <div
-          style="
-            height:260px;
-            display:flex;
-            align-items:center;
-            justify-content:center;
-            font-size:20px;
-          "
-        >
-          🎬 Video / Reel
-        </div>
-      `;
+      return res.status(500).json({
+        success: false,
+        message:
+          "Failed to load Instagram media"
+      });
 
     }
 
-    return `
+};
 
-      <div class="glass post-card">
-
-        ${media}
-
-        <div class="post-content">
-
-          <p class="post-caption">
-            ${post.caption || "No caption"}
-          </p>
-
-          <a
-            href="${post.permalink}"
-            target="_blank"
-            class="post-link"
-          >
-            Open Post →
-          </a>
-
-        </div>
-
-      </div>
-
-    `;
-
-  }).join("");
-```
-
-} catch (err) {
-
-```
-console.error(
-  "Media Load Error:",
-  err
-);
-```
-
-}
-
-}
-
-window.addEventListener(
-"DOMContentLoaded",
-async () => {
-
-```
-await loadInstagramProfile();
-
-await loadInstagramMedia();
-```
-
-}
-);
