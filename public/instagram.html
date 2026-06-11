@@ -39,15 +39,11 @@
             <nav>
 
                 <a class="active">
-                    Dashboard
+                    📊 Dashboard
                 </a>
 
                 <a>
-                    Profile
-                </a>
-
-                <a>
-                    Posts
+                    📸 Posts
                 </a>
 
             </nav>
@@ -63,7 +59,7 @@
     <!-- MAIN CONTENT -->
     <main class="main-content">
 
-        <!-- TOP BAR -->
+        <!-- TOPBAR -->
         <div class="topbar">
 
             <h1>
@@ -101,36 +97,28 @@
 
         </div>
 
-        <!-- PROFILE CARD -->
-        <section style="margin-top:30px;">
+        <!-- ACCOUNT INFO -->
+        <section class="glass pages-section">
 
-            <div class="glass profile-card">
+            <div class="section-title">
+                Account Information
+            </div>
 
-                <div class="profile-left">
+            <div style="
+                display:flex;
+                flex-direction:column;
+                gap:15px;
+                font-size:18px;
+            ">
 
-                    <img
-                        id="igProfileImage"
-                        src="https://cdn-icons-png.flaticon.com/512/3135/3135715.png"
-                        alt="Profile"
-                        style="
-                        width:120px;
-                        height:120px;
-                        border-radius:50%;
-                        object-fit:cover;
-                        ">
-
+                <div>
+                    <strong>Username:</strong>
+                    <span id="igUsername">Loading...</span>
                 </div>
 
-                <div class="profile-right">
-
-                    <h2 id="igUsername">
-                        Loading...
-                    </h2>
-
-                    <p id="igId">
-                        ID: --
-                    </p>
-
+                <div>
+                    <strong>Instagram ID:</strong>
+                    <span id="igId">--</span>
                 </div>
 
             </div>
